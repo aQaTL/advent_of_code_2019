@@ -7,12 +7,11 @@ fn main() {
 
 	println!("Part 1: {}", solve(input.clone(), 12, 2));
 
-	for i in 0..=99 {
+	'loop_: for i in 0..=99 {
 		for j in 0..=99 {
-			let result = solve(input.clone(), i, j);
-			if result == 19690720 {
+			if solve(input.clone(), i, j) == 19690720 {
 				println!("Part 2: {}", 100 * i + j);
-				break;
+				break 'loop_;
 			}
 		}
 	}
@@ -22,8 +21,7 @@ fn solve(mut input: Vec<i64>, i: i64, j: i64) -> i64 {
 	input[1] = i;
 	input[2] = j;
 
-	let mut i = 0;
-	loop {
+	for i in (0..).step_by(4) {
 		let (input_1, input_2, output) = (
 			input[i + 1] as usize,
 			input[i + 2] as usize,
@@ -32,10 +30,8 @@ fn solve(mut input: Vec<i64>, i: i64, j: i64) -> i64 {
 		match input[i] {
 			1 => input[output] = input[input_1] + input[input_2],
 			2 => input[output] = input[input_1] * input[input_2],
-			99 => break,
-			_ => (),
+			_ => break,
 		}
-		i += 4;
 	}
 
 	input[0]
