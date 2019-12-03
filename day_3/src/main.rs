@@ -1,11 +1,3 @@
-#[derive(Debug, PartialOrd, PartialEq, Clone, Copy)]
-enum Point {
-	Empty,
-	Visited,
-	Crossed,
-	Start,
-}
-
 fn main() {
 	let input = std::fs::read_to_string("day_3/input.txt")
 		.unwrap();
@@ -13,15 +5,11 @@ fn main() {
 	let input = input.lines()
 		.collect::<Vec<_>>();
 
-	let mut grid = vec![vec![Point::Empty; 5000]; 1000000];
-	grid[0][0] = Point::Start;
-
 	let mut v: Vec<((i64, i64), i64)> = Vec::new();
 	let mut crosses: Vec<((i64, i64), i64)> = Vec::new();
 
 	for (idx, line) in input.into_iter().enumerate() {
 		let mut steps = 0;
-		let mut p = (0usize, 0usize);
 
 		let mut p = (0i64, 0i64);
 
@@ -29,7 +17,7 @@ fn main() {
 			let amount = step[1..].parse::<i64>().unwrap();
 			match &step[0..1] {
 				"R" => {
-					for i in 1..=amount {
+					for _ in 0..amount {
 						steps += 1;
 						p.0 += 1;
 						if idx == 1 {
@@ -42,7 +30,7 @@ fn main() {
 					}
 				}
 				"L" => {
-					for i in 1..=amount {
+					for _ in 0..amount {
 						steps += 1;
 						p.0 -= 1;
 						if idx == 1 {
@@ -55,7 +43,7 @@ fn main() {
 					}
 				}
 				"U" => {
-					for i in 1..=amount {
+					for _ in 0..amount {
 						steps += 1;
 						p.1 += 1;
 						if idx == 1 {
@@ -68,7 +56,7 @@ fn main() {
 					}
 				}
 				"D" => {
-					for i in 1..=amount {
+					for _ in 0..amount {
 						steps += 1;
 						p.1 -= 1;
 						if idx == 1 {
