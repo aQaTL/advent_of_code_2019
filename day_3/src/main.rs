@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 fn main() {
 	let input = std::fs::read_to_string("day_3/input.txt")
 		.unwrap();
@@ -5,7 +7,7 @@ fn main() {
 	let input = input.lines()
 		.collect::<Vec<_>>();
 
-	let mut v: Vec<((i64, i64), i64)> = Vec::new();
+	let mut v: HashMap<(i64, i64), i64> = HashMap::new();
 	let mut crosses: Vec<((i64, i64), i64)> = Vec::new();
 
 	for (idx, line) in input.into_iter().enumerate() {
@@ -21,11 +23,11 @@ fn main() {
 						steps += 1;
 						p.0 += 1;
 						if idx == 1 {
-							if let Some((_, steps1)) = v.iter().find(|el| el.0 == p) {
+							if let Some(steps1) = v.get(&p) {
 								crosses.push((p, steps + *steps1));
 							}
 						} else {
-							v.push((p, steps));
+							v.insert(p, steps);
 						}
 					}
 				}
@@ -34,11 +36,11 @@ fn main() {
 						steps += 1;
 						p.0 -= 1;
 						if idx == 1 {
-							if let Some((_, steps1)) = v.iter().find(|el| el.0 == p) {
+							if let Some(steps1) = v.get(&p) {
 								crosses.push((p, steps + *steps1));
 							}
 						} else {
-							v.push((p, steps));
+							v.insert(p, steps);
 						}
 					}
 				}
@@ -47,11 +49,11 @@ fn main() {
 						steps += 1;
 						p.1 += 1;
 						if idx == 1 {
-							if let Some((_, steps1)) = v.iter().find(|el| el.0 == p) {
+							if let Some(steps1) = v.get(&p) {
 								crosses.push((p, steps + *steps1));
 							}
 						} else {
-							v.push((p, steps));
+							v.insert(p, steps);
 						}
 					}
 				}
@@ -60,11 +62,11 @@ fn main() {
 						steps += 1;
 						p.1 -= 1;
 						if idx == 1 {
-							if let Some((_, steps1)) = v.iter().find(|el| el.0 == p) {
+							if let Some(steps1) = v.get(&p) {
 								crosses.push((p, steps + *steps1));
 							}
 						} else {
-							v.push((p, steps));
+							v.insert(p, steps);
 						}
 					}
 				}
