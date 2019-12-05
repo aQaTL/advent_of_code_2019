@@ -1,11 +1,9 @@
 use std::collections::HashMap;
 
 fn main() {
-	let input = std::fs::read_to_string("day_3/input.txt")
-		.unwrap();
+	let input = std::fs::read_to_string("day_3/input.txt").unwrap();
 
-	let input = input.lines()
-		.collect::<Vec<_>>();
+	let input = input.lines().collect::<Vec<_>>();
 
 	let mut v: HashMap<(i64, i64), i64> = HashMap::new();
 	let mut crosses: Vec<((i64, i64), i64)> = Vec::new();
@@ -75,7 +73,11 @@ fn main() {
 		}
 	}
 
-	let p1 = crosses.iter().map(|p| manhattan_distance((0i64, 0i64), p.0)).min().unwrap();
+	let p1 = crosses
+		.iter()
+		.map(|p| manhattan_distance((0i64, 0i64), p.0))
+		.min()
+		.unwrap();
 	let p2 = crosses.into_iter().map(|p| p.1).min().unwrap();
 	println!("Part 1: {:?}", p1);
 	println!("Part 2: {:?}", p2);
