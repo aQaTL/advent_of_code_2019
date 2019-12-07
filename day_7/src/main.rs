@@ -32,11 +32,12 @@ fn part_1(input: Vec<i64>) -> i64 {
 							continue;
 						}
 						let mut inp = 0;
-						inp = solve(input.clone(), p1, inp);
-						inp = solve(input.clone(), p2, inp);
-						inp = solve(input.clone(), p3, inp);
-						inp = solve(input.clone(), p4, inp);
-						inp = solve(input.clone(), p5, inp);
+						for &phase in [p1, p2, p3, p4, p5].iter() {
+							let (sender, receiver) = channel();
+							sender.send(phase).unwrap();
+							sender.send(inp).unwrap();
+							inp = solve(input.clone(), sender, receiver);
+						}
 						if inp > output {
 							output = inp;
 						}
@@ -46,119 +47,6 @@ fn part_1(input: Vec<i64>) -> i64 {
 		}
 	}
 	output
-}
-
-fn solve(mut input: Vec<i64>, id: i64, inp2: i64) -> i64 {
-	let mut used = false;
-	let mut i = 0;
-	let mut prog_output = 0;
-	loop {
-		let mut inp = input[i].to_string();
-		let inp = unsafe { inp.as_bytes_mut() };
-		inp.reverse();
-		let (op, params) = if inp.len() >= 2 {
-			inp.split_at_mut(2)
-		} else {
-			(inp, &mut [][..])
-		};
-		match std::str::from_utf8(op).unwrap() {
-			"10" | "1" => {
-				let (mut input_1, mut input_2, output) =
-					(input[i + 1], input[i + 2], input[i + 3] as usize);
-				if *params.get(0).unwrap_or(&48) == 48 {
-					input_1 = input[input_1 as usize];
-				}
-				if *params.get(1).unwrap_or(&48) == 48 {
-					input_2 = input[input_2 as usize];
-				}
-				input[output] = input_1 + input_2;
-				i += 4;
-			}
-			"20" | "2" => {
-				let (mut input_1, mut input_2, output) =
-					(input[i + 1], input[i + 2], input[i + 3] as usize);
-				if *params.get(0).unwrap_or(&48) == 48 {
-					input_1 = input[input_1 as usize];
-				}
-				if *params.get(1).unwrap_or(&48) == 48 {
-					input_2 = input[input_2 as usize];
-				}
-				input[output] = input_1 * input_2;
-
-				i += 4;
-			}
-			"3" => {
-				let output = input[i + 1] as usize;
-				if !used {
-					input[output] = id;
-					used = true;
-				} else {
-					input[output] = inp2;
-				}
-				i += 2;
-			}
-			"40" | "4" => {
-				prog_output = input[input[i + 1] as usize];
-				i += 2;
-			}
-			"50" | "5" => {
-				let (mut input_1, mut input_2) = (input[i + 1], input[i + 2]);
-				if *params.get(0).unwrap_or(&48) == 48 {
-					input_1 = input[input_1 as usize];
-				}
-				if *params.get(1).unwrap_or(&48) == 48 {
-					input_2 = input[input_2 as usize];
-				}
-				if input_1 != 0 {
-					i = input_2 as usize;
-				} else {
-					i += 3;
-				}
-			}
-			"60" | "6" => {
-				let (mut input_1, mut input_2) = (input[i + 1], input[i + 2]);
-				if *params.get(0).unwrap_or(&48) == 48 {
-					input_1 = input[input_1 as usize];
-				}
-				if *params.get(1).unwrap_or(&48) == 48 {
-					input_2 = input[input_2 as usize];
-				}
-				if input_1 == 0 {
-					i = input_2 as usize;
-				} else {
-					i += 3;
-				}
-			}
-			"70" | "7" => {
-				let (mut input_1, mut input_2, output) =
-					(input[i + 1], input[i + 2], input[i + 3] as usize);
-				if *params.get(0).unwrap_or(&48) == 48 {
-					input_1 = input[input_1 as usize];
-				}
-				if *params.get(1).unwrap_or(&48) == 48 {
-					input_2 = input[input_2 as usize];
-				}
-				input[output] = if input_1 < input_2 { 1 } else { 0 };
-				i += 4;
-			}
-			"80" | "8" => {
-				let (mut input_1, mut input_2, output) =
-					(input[i + 1], input[i + 2], input[i + 3] as usize);
-				if *params.get(0).unwrap_or(&48) == 48 {
-					input_1 = input[input_1 as usize];
-				}
-				if *params.get(1).unwrap_or(&48) == 48 {
-					input_2 = input[input_2 as usize];
-				}
-				input[output] = if input_1 == input_2 { 1 } else { 0 };
-				i += 4;
-			}
-			"99" => break,
-			_ => (),
-		}
-	}
-
-	prog_output
 }
 
 fn part_2(input: Vec<i64>) -> i64 {
@@ -185,17 +73,22 @@ fn part_2(input: Vec<i64>) -> i64 {
 						let (sender3, receiver3) = channel();
 						let (sender4, receiver4) = channel();
 						let (sender5, receiver5) = channel();
+						sender1.send(p1).unwrap();
+						sender2.send(p2).unwrap();
+						sender3.send(p3).unwrap();
+						sender4.send(p4).unwrap();
+						sender5.send(p5).unwrap();
 						sender1.send(0).unwrap();
 
 						let input_c = input.clone();
-						thread::spawn(move || solve2(input_c, p1, sender2, receiver1));
+						thread::spawn(move || solve(input_c, sender2, receiver1));
 						let input_c = input.clone();
-						thread::spawn(move || solve2(input_c, p2, sender3, receiver2));
+						thread::spawn(move || solve(input_c, sender3, receiver2));
 						let input_c = input.clone();
-						thread::spawn(move || solve2(input_c, p3, sender4, receiver3));
+						thread::spawn(move || solve(input_c, sender4, receiver3));
 						let input_c = input.clone();
-						thread::spawn(move || solve2(input_c, p4, sender5, receiver4));
-						let prog_output = solve2(input.clone(), p5, sender1, receiver5);
+						thread::spawn(move || solve(input_c, sender5, receiver4));
+						let prog_output = solve(input.clone(), sender1, receiver5);
 						if prog_output > output {
 							output = prog_output;
 						}
@@ -207,8 +100,7 @@ fn part_2(input: Vec<i64>) -> i64 {
 	output
 }
 
-fn solve2(mut input: Vec<i64>, phase: i64, sender: Sender<i64>, receiver: Receiver<i64>) -> i64 {
-	let mut used = false;
+fn solve(mut input: Vec<i64>, sender: Sender<i64>, receiver: Receiver<i64>) -> i64 {
 	let mut i = 0;
 	let mut prog_output = 0;
 	loop {
@@ -248,12 +140,7 @@ fn solve2(mut input: Vec<i64>, phase: i64, sender: Sender<i64>, receiver: Receiv
 			}
 			"3" => {
 				let output = input[i + 1] as usize;
-				if !used {
-					input[output] = phase;
-					used = true;
-				} else {
-					input[output] = receiver.recv().unwrap();
-				}
+				input[output] = receiver.recv().unwrap();
 				i += 2;
 			}
 			"40" | "4" => {
