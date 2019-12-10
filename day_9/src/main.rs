@@ -1,8 +1,7 @@
 use std::sync::mpsc::{channel, Receiver, Sender};
 
 fn main() {
-	let input = std::fs::read_to_string("day_9/input.txt")
-		.unwrap();
+	let input = std::fs::read_to_string("day_9/input.txt").unwrap();
 	let mut input = input
 		.split(",")
 		.map(|e| e.parse::<i64>().unwrap())
@@ -41,7 +40,7 @@ fn solve(mut input: Vec<i64>, sender: Sender<i64>, receiver: Receiver<i64>) -> i
 		match std::str::from_utf8(op).unwrap() {
 			"10" | "1" => {
 				let (mut input_1, mut input_2, mut output) =
-					(input[i + 1], input[i + 2], input[i + 3] );
+					(input[i + 1], input[i + 2], input[i + 3]);
 				if *params.get(0).unwrap_or(&48) == 48 {
 					input_1 = input[input_1 as usize];
 				}
@@ -62,7 +61,7 @@ fn solve(mut input: Vec<i64>, sender: Sender<i64>, receiver: Receiver<i64>) -> i
 			}
 			"20" | "2" => {
 				let (mut input_1, mut input_2, mut output) =
-					(input[i + 1], input[i + 2], input[i + 3] );
+					(input[i + 1], input[i + 2], input[i + 3]);
 				if *params.get(0).unwrap_or(&48) == 48 {
 					input_1 = input[input_1 as usize];
 				}
@@ -101,7 +100,7 @@ fn solve(mut input: Vec<i64>, sender: Sender<i64>, receiver: Receiver<i64>) -> i
 				match sender.send(input_1) {
 					_ => (),
 				}
-				prog_output = input_1 ;
+				prog_output = input_1;
 				i += 2;
 			}
 			"50" | "5" => {
@@ -146,7 +145,7 @@ fn solve(mut input: Vec<i64>, sender: Sender<i64>, receiver: Receiver<i64>) -> i
 			}
 			"70" | "7" => {
 				let (mut input_1, mut input_2, mut output) =
-					(input[i + 1], input[i + 2], input[i + 3] );
+					(input[i + 1], input[i + 2], input[i + 3]);
 				if *params.get(0).unwrap_or(&48) == 48 {
 					input_1 = input[input_1 as usize];
 				}
