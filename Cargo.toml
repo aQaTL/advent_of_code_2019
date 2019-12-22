@@ -1,5 +1,6 @@
 [workspace]
 members = [
+	"intcode",
 	"day_1",
 	"day_2",
 	"day_3",
@@ -14,4 +15,5 @@ members = [
 	"day_12",
 	"day_13",
 	"day_14",
+	"day_15",
 ]
