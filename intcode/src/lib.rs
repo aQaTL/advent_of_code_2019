@@ -11,14 +11,14 @@ pub struct Intcode {
 }
 
 impl Intcode {
-	pub fn parse_input<P: AsRef<Path>>(path: P) -> io::Result<Self> {
+	pub fn parse_input<P: AsRef<Path>>(path: P) -> io::Result<HashMap<i64, i64>> {
 		let input = std::fs::read_to_string(path)?;
 		let input = input
 			.split(",")
 			.enumerate()
 			.map(|(idx, e)| (idx as i64, e.parse::<i64>().unwrap()))
 			.collect::<HashMap<i64, i64>>();
-		Ok(Intcode::new(input))
+		Ok(input)
 	}
 
 	pub fn new(input: HashMap<i64, i64>) -> Self {

@@ -2,7 +2,7 @@ use intcode::Intcode;
 use std::sync::mpsc::channel;
 
 fn main() {
-	let input = Intcode::parse_input("day_9/input.txt").unwrap();
+	let input = Intcode::new(Intcode::parse_input("day_9/input.txt").unwrap());
 
 	println!("Part 1: {}", part_1(input.clone()));
 	println!("Part 2: {}", part_2(input));

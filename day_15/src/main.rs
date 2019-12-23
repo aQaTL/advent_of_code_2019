@@ -2,7 +2,7 @@ use intcode::Intcode;
 use std::collections::{HashMap, HashSet};
 
 fn main() {
-	let interpreter = Intcode::parse_input("day_15/input.txt").unwrap();
+	let interpreter = Intcode::new(Intcode::parse_input("day_15/input.txt").unwrap());
 
 	let mut grid = HashMap::<(i64, i64), (u8, i64)>::new();
 
