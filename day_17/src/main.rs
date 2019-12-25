@@ -1,7 +1,7 @@
 use intcode::Intcode;
+use itertools::Itertools;
 use std::sync::mpsc::channel;
 use Movement::*;
-use itertools::Itertools;
 
 fn main() {
 	let input = Intcode::parse_input("day_17/input.txt").unwrap();
@@ -54,24 +54,32 @@ fn main() {
 
 	loop {
 		let mut steps = 0;
-		while get_from_vec(&img,
-						   ((robot_pos.1 + robot_dir_vec.1) * (width as i64)) + (robot_pos.0 + robot_dir_vec.0))
-			.unwrap_or('.') == '#'
-			{
-				robot_pos = (robot_pos.0 + robot_dir_vec.0, robot_pos.1 + robot_dir_vec.1);
-				steps += 1;
-			}
+		while get_from_vec(
+			&img,
+			((robot_pos.1 + robot_dir_vec.1) * (width as i64)) + (robot_pos.0 + robot_dir_vec.0),
+		)
+		.unwrap_or('.')
+			== '#'
+		{
+			robot_pos = (robot_pos.0 + robot_dir_vec.0, robot_pos.1 + robot_dir_vec.1);
+			steps += 1;
+		}
 		if steps != 0 {
 			movements.push(Movement::Move(steps));
 		}
 
 		let new_dir = {
 			let mut t = None;
-			for (idx, dir_vec) in dirs.iter().enumerate().filter(|(idx, _)| ((*idx + 2) % 4) as i64 != robot_dir) {
-				if get_from_vec(&img,
-								(robot_pos.1 + dir_vec.1) * (width as i64) + (robot_pos.0 + dir_vec.0))
-					.unwrap_or('.')
-					== '#'
+			for (idx, dir_vec) in dirs
+				.iter()
+				.enumerate()
+				.filter(|(idx, _)| ((*idx + 2) % 4) as i64 != robot_dir)
+			{
+				if get_from_vec(
+					&img,
+					(robot_pos.1 + dir_vec.1) * (width as i64) + (robot_pos.0 + dir_vec.0),
+				)
+				.unwrap_or('.') == '#'
 				{
 					t = Some((idx as i64, *dir_vec));
 					break;
@@ -85,12 +93,22 @@ fn main() {
 		}
 		let new_dir = new_dir.unwrap();
 
-		if { if robot_dir - 1 >= 0 { robot_dir - 1 } else { 3 } } == new_dir.0 {
+		if {
+			if robot_dir - 1 >= 0 {
+				robot_dir - 1
+			} else {
+				3
+			}
+		} == new_dir.0
+		{
 			movements.push(Movement::Turn('L'));
 		} else if (robot_dir + 1) % 4 == new_dir.0 {
 			movements.push(Movement::Turn('R'));
 		} else {
-			panic!(format!("Old dir: {}, new dir: {} at pos {:?}", robot_dir, new_dir.0, robot_pos));
+			panic!(format!(
+				"Old dir: {}, new dir: {} at pos {:?}",
+				robot_dir, new_dir.0, robot_pos
+			));
 		}
 
 		robot_dir = new_dir.0;
@@ -115,21 +133,55 @@ fn main() {
 	let (s, receiver) = channel();
 	std::thread::spawn(move || interpreter.run(s, r));
 
-	let a = [Turn('L'), Move(1), Move(9), Turn('R'), Move(8), Turn('R'), Move(8), Turn('L'), Move(9), Move(1)];
-	let b = [Turn('L'), Move(9), Move(1), Turn('L'), Move(6), Turn('R'), Move(9), Move(1)];
-	let c = [Turn('R'), Move(6), Turn('R'), Move(8), Turn('R'), Move(8), Turn('L'), Move(6), Turn('R'), Move(8)];
+	let a = [
+		Turn('L'),
+		Move(1),
+		Move(9),
+		Turn('R'),
+		Move(8),
+		Turn('R'),
+		Move(8),
+		Turn('L'),
+		Move(9),
+		Move(1),
+	];
+	let b = [
+		Turn('L'),
+		Move(9),
+		Move(1),
+		Turn('L'),
+		Move(6),
+		Turn('R'),
+		Move(9),
+		Move(1),
+	];
+	let c = [
+		Turn('R'),
+		Move(6),
+		Turn('R'),
+		Move(8),
+		Turn('R'),
+		Move(8),
+		Turn('L'),
+		Move(6),
+		Turn('R'),
+		Move(8),
+	];
 
 	let move_routine = "B,C,B,A,C,A,C,B,A,C";
-	move_routine.as_bytes().iter().for_each(|&x| sender.send(x as i64).unwrap());
+	move_routine
+		.as_bytes()
+		.iter()
+		.for_each(|&x| sender.send(x as i64).unwrap());
 	sender.send(b'\n' as i64).unwrap();
 
 	let send = |arr: &[Movement]| {
-		arr.iter().interleave([Turn(',')].iter().cycle().take(arr.len() - 1)).for_each(|m| {
-			match m {
+		arr.iter()
+			.interleave([Turn(',')].iter().cycle().take(arr.len() - 1))
+			.for_each(|m| match m {
 				Turn(t) => sender.send(*t as u8 as i64).unwrap(),
 				Move(steps) => sender.send(*steps + 48).unwrap(),
-			}
-		});
+			});
 		sender.send(b'\n' as i64).unwrap();
 	};
 	send(&a);
