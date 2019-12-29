@@ -1,8 +1,8 @@
 use intcode::Intcode;
 use std::sync::mpsc::channel;
 
-macro_rules! send {
-	($sender:expr,{$($instr:tt $x:tt $y:tt)*}, $run_cmd:tt) => {
+macro_rules! spring_script {
+	($sender:expr, {$($instr:tt $x:tt $y:tt)*}, $run_cmd:tt) => {
 		concat!(
 			$(concat!(stringify!($instr $x $y), '\n'),)*
 			concat!(stringify!($run_cmd), '\n')
@@ -21,7 +21,7 @@ fn main() {
 	let ((sender_p2, r), (s, receiver_p2)) = (channel(), channel());
 	std::thread::spawn(move || interpreter_2.run(s, r));
 
-	send!(
+	spring_script!(
 		&sender_p1,
 		{
 			NOT C J
@@ -32,7 +32,7 @@ fn main() {
 		WALK
 	);
 
-	send!(
+	spring_script!(
 		&sender_p2,
 		{
 			NOT B T
